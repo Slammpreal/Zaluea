@@ -5,19 +5,12 @@
   "main": "index.mjs",
   "type": "module",
   "scripts": {
-    "start": "node index.mjs",
-    "dev": "nodemon index.mjs"
+    "start": "node index.mjs"
   },
   "engines": {
     "node": ">=24.0.0"
   },
   "dependencies": {
-    "@tomphttp/bare-server-node": "^1.0.0",
-    "node-static": "^0.7.11"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
-  },
-  "author": "Slammp Somebody",
-  "license": "MIT"
+    "@tomphttp/bare-server-node": "^1.0.0"
+  }
 }
