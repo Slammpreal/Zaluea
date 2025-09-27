@@ -1,4 +1,4 @@
-import Server from 'bare-server-node';
+import { Server } from '@tomphttp/bare-server-node';
 import http from 'http';
 import nodeStatic from 'node-static';
 
@@ -18,16 +18,17 @@ server.on('request', (req, res) => {
             });
         }
     } catch (e) {
+        console.error(e);
         if (!res.headersSent) {
             res.writeHead(500, { 'Content-Type': 'text/plain' });
             res.end('Internal server error');
         }
-        console.error(e);
     }
 });
 
 server.on('upgrade', (req, socket, head) => {
-    if (!bare.route_upgrade(req, socket, head)) {
+    const handled = bare.route_upgrade(req, socket, head);
+    if (!handled) {
         socket.end();
     }
 });
