@@ -2,15 +2,15 @@ import Server from 'bare-server-node';
 import http from 'http';
 import nodeStatic from 'node-static';
 
-// Bare server
+// Bare server for /bare/ routes
 const bare = new Server('/bare/', '');
 
-// Static server
+// Static server for Site/ folder
 const serve = new nodeStatic.Server('Site/');
 
 // HTTP server
 const server = http.createServer((request, response) => {
-    // If bare handles the request, exit early
+    // Let Bare handle requests first
     if (bare.route_request(request, response)) return;
 
     // Serve static files safely
@@ -24,12 +24,12 @@ const server = http.createServer((request, response) => {
     }).resume();
 });
 
-// WebSocket / Upgrade
+// WebSocket / Upgrade handling
 server.on('upgrade', (req, socket, head) => {
     if (bare.route_upgrade(req, socket, head)) return;
     socket.end();
 });
 
-// Listen on Render port
+// Listen on Render-assigned port
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
