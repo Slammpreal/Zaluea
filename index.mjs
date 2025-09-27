@@ -30,6 +30,6 @@ server.on('upgrade', (req, socket, head) => {
     socket.end();
 });
 
-// Listen on Render-assigned port
+// ✅ Use Render's assigned port
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
