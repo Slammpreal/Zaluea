@@ -1,16 +1,23 @@
 {
-  "name": "zaluea-server",
+  "name": "zaluea",
   "version": "1.0.0",
-  "type": "module",
+  "description": "Zaluea project",
   "main": "index.mjs",
+  "type": "module",
   "scripts": {
-    "start": "node index.mjs"
-  },
-  "dependencies": {
-    "bare-server-node": "^0.5.0",
-    "node-static": "^0.7.11"
+    "start": "node index.mjs",
+    "dev": "nodemon index.mjs"
   },
   "engines": {
-    "node": ">=22.16.0"
-  }
+    "node": ">=24.0.0"
+  },
+  "dependencies": {
+    "@tomphttp/bare-server-node": "^1.0.0",
+    "node-static": "^0.7.11"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "author": "Slammp Somebody",
+  "license": "MIT"
 }
