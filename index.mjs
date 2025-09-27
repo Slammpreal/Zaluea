@@ -1,37 +1,38 @@
-import { Server } from '@tomphttp/bare-server-node';
-import http from 'http';
-import nodeStatic from 'node-static';
+import { createServer } from 'http';
+import { BareServer } from 'bare-server-node';
+import serveHandler from 'serve-handler';
 
-const bare = new Server('/bare/', '');
-const serve = new nodeStatic.Server('Site/');
-const server = http.createServer();
-
-server.on('request', (req, res) => {
-    try {
-        const handled = bare.route_request(req, res);
-        if (!handled) {
-            serve.serve(req, res, (err) => {
-                if (err && !res.headersSent) {
-                    res.writeHead(err.status || 500, { 'Content-Type': 'text/plain' });
-                    res.end(err.message);
-                }
-            });
-        }
-    } catch (e) {
-        console.error(e);
-        if (!res.headersSent) {
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('Internal server error');
-        }
-    }
-});
-
-server.on('upgrade', (req, socket, head) => {
-    const handled = bare.route_upgrade(req, socket, head);
-    if (!handled) {
-        socket.end();
-    }
-});
-
+const bare = new BareServer('/bare/', '');
 const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const server = createServer(async (req, res) => {
+  try {
+    // First, let bare-server handle WebSocket upgrade or special requests
+    const handled = bare.route_request(req, res);
+    if (!handled) {
+      // Fallback: serve static files from Site/ folder
+      await serveHandler(req, res, {
+        public: 'Site',
+        cleanUrls: true,
+      });
+    }
+  } catch (err) {
+    // Catch everything and make sure headers are only sent once
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Internal Server Error');
+    }
+    console.error(err);
+  }
+});
+
+// Handle WebSocket upgrades via bare-server
+server.on('upgrade', (req, socket, head) => {
+  if (!bare.route_upgrade(req, socket, head)) {
+    socket.end();
+  }
+});
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
